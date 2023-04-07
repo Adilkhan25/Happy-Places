@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.adilkhan.happyplaces.activities.AddHappyPlacesActivity
 import com.adilkhan.happyplaces.activities.MainActivity
+import com.adilkhan.happyplaces.databases.DatabaseHandler
 import com.adilkhan.happyplaces.databinding.ActivityAddHappyPlacesBinding
 import com.adilkhan.happyplaces.databinding.ItemHappyPlaceBinding
 import com.adilkhan.happyplaces.models.HappyPlaceModel
@@ -68,5 +69,15 @@ open class HappyPlacesAdapter(
         activity.startActivityForResult(intentAddHappyPlacesActivity,requestCode)
         notifyItemChanged(position)
     }
+   // swipe to delete
+    fun notifyDeleteItem(position: Int)
+   {
+        val dbHandler = DatabaseHandler(context)
+       val isDeleted =  dbHandler.deleteHappyPlace(list[position])
+       if(isDeleted>0)
+       {    list.removeAt(position)
+           notifyItemRemoved(position)
+       }
 
+    }
 }
