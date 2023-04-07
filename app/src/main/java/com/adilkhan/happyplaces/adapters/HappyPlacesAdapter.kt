@@ -1,13 +1,18 @@
 package com.adilkhan.happyplaces.adapters
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.adilkhan.happyplaces.activities.AddHappyPlacesActivity
+import com.adilkhan.happyplaces.activities.MainActivity
 import com.adilkhan.happyplaces.databinding.ActivityAddHappyPlacesBinding
 import com.adilkhan.happyplaces.databinding.ItemHappyPlaceBinding
 import com.adilkhan.happyplaces.models.HappyPlaceModel
+import kotlinx.coroutines.MainScope
 
 open class HappyPlacesAdapter(
     private val context: Context,
@@ -53,6 +58,15 @@ open class HappyPlacesAdapter(
     }
     interface OnClickListener{
         fun ocClick(position: Int,model:HappyPlaceModel)
+    }
+    // swipe to edit or delete
+    fun notifyEditItem(activity:Activity, position: Int, requestCode:Int)
+    {
+        // from here open add happy place activity
+        val intentAddHappyPlacesActivity = Intent(context, AddHappyPlacesActivity::class.java)
+        intentAddHappyPlacesActivity.putExtra(MainActivity.EXTRA_PLACE_DETAILS, list[position])
+        activity.startActivityForResult(intentAddHappyPlacesActivity,requestCode)
+        notifyItemChanged(position)
     }
 
 }

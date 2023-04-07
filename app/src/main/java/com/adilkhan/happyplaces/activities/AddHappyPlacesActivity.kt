@@ -41,7 +41,7 @@ class AddHappyPlacesActivity : AppCompatActivity(), View.OnClickListener {
     private var saveImageToInternalStorage: Uri? = null
     private var mLatitude : Double = 0.0
     private var mLongitude : Double = 0.0
-
+    private var mHappyPlaceDetails : HappyPlaceModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addHappyPlacesBinding = ActivityAddHappyPlacesBinding.inflate(layoutInflater)
@@ -57,6 +57,26 @@ class AddHappyPlacesActivity : AppCompatActivity(), View.OnClickListener {
              updateDateInView()
          }
         updateDateInView() // automatic set the current date
+        // we call from main to adapter then this activity to edit to swipe so lets check
+        // it has already contain some data or not if it is then populated these data
+
+        if(intent.hasExtra(MainActivity.EXTRA_PLACE_DETAILS))
+        {
+            mHappyPlaceDetails = intent.getSerializableExtra(MainActivity.EXTRA_PLACE_DETAILS)
+            as HappyPlaceModel
+        }
+        // if it contain some data then it will be not null
+        if(mHappyPlaceDetails!=null){
+            supportActionBar?.title = "Edit Happy Place"
+            addHappyPlacesBinding?.etTitle?.setText(mHappyPlaceDetails?.title.toString())
+            addHappyPlacesBinding?.etDescription?.setText(mHappyPlaceDetails?.description.toString())
+            addHappyPlacesBinding?.etDate?.setText(mHappyPlaceDetails?.date.toString())
+            addHappyPlacesBinding?.etLocation?.setText(mHappyPlaceDetails?.location.toString())
+            addHappyPlacesBinding?.btnSave?.text = "Update"
+            saveImageToInternalStorage = Uri.parse(mHappyPlaceDetails!!.image)
+            addHappyPlacesBinding?.ivPlaceImage?.setImageURI(saveImageToInternalStorage)
+
+        }
         // this is added because when we click in this class , this will call on click method
         addHappyPlacesBinding?.etDate?.setOnClickListener(this)
         addHappyPlacesBinding?.tvAddImage?.setOnClickListener(this)
@@ -111,7 +131,8 @@ class AddHappyPlacesActivity : AppCompatActivity(), View.OnClickListener {
 
                     }
                     else->{
-                        val happyPlaceModel = HappyPlaceModel(0,
+                        val id = if(mHappyPlaceDetails==null) 0 else mHappyPlaceDetails!!.id
+                        val happyPlaceModel = HappyPlaceModel(id,
                         addHappyPlacesBinding?.etTitle?.text.toString(),
                         saveImageToInternalStorage.toString(),
                             addHappyPlacesBinding?.etDescription?.text.toString(),
@@ -121,12 +142,29 @@ class AddHappyPlacesActivity : AppCompatActivity(), View.OnClickListener {
                             mLongitude
                         )
                         val dbHandler=DatabaseHandler(this)
-                        val addHappyPlace = dbHandler.addHappyPlace(happyPlaceModel)
-                        if(addHappyPlace>0)
+                        // check for update or add
+                        if(mHappyPlaceDetails==null)
                         {
-                            setResult(Activity.RESULT_OK)
-                            finish()
+                            val addHappyPlace = dbHandler.addHappyPlace(happyPlaceModel)
+                            if(addHappyPlace>0)
+                            {
+                                setResult(Activity.RESULT_OK)
+                                finish()
+                            }
                         }
+                        else
+                        {
+                            if(mHappyPlaceDetails!=null)
+                            {
+                                val updateHappyPlace = dbHandler.updateHappyPlace(happyPlaceModel)
+                                if(updateHappyPlace>0)
+                                {
+                                    setResult(Activity.RESULT_OK)
+                                    finish()
+                                }
+                            }
+                        }
+
 
                     }
                 }
