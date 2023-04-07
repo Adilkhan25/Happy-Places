@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Happy Places</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="_19_03_2023">19.03.2023</string>
+    <string name="location">Location</string>
+    <string name="date">Date</string>
+    <string name="save">Save</string>
+    <string name="add_image">ADD IMAGE</string>
+    <string name="no_record_available_please_kindly_add">No records available , Please kindly add</string>
+    <string name="image_content_description">image</string>
+</resources>
